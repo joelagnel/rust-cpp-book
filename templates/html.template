@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$pagetitle$</title>
+    <link rel="stylesheet" href="styles/book.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>$title$</h1>
+            </div>
+            $if(toc)$
+            <div class="toc">
+                $toc$
+            </div>
+            $endif$
+        </nav>
+        <main class="content">
+            $body$
+        </main>
+    </div>
+</body>
+</html>

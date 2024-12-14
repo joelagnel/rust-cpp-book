@@ -1,0 +1,4 @@
+html_book
+*.pdf
+*.html
+*/*.html

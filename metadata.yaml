@@ -1,0 +1,14 @@
+---
+title: Rust for C and C++ programmers
+author: Joel Fernandes
+date: 2024
+toc: true
+toc-depth: 2
+numbersections: true
+geometry: margin=1in
+linkcolor: blue
+header-includes: |
+    \usepackage{fancyhdr}
+    \pagestyle{fancy}
+    \fancyhead[CO,CE]{Rust for C and C++ programmers}
+---
