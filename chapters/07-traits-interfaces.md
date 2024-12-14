@@ -216,7 +216,7 @@ int main() {
 }
 ```
 
-Rust�s trait system provides a safer and more flexible approach to polymorphism, making it a robust alternative for systems programming.
+Rust's trait system provides a safer and more flexible approach to polymorphism, making it a robust alternative for systems programming.
 
 ---
 
