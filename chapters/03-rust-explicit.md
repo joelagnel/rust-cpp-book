@@ -1,4 +1,4 @@
-## Rust is Explicit about Programmer Intentions (Ex: Mutability is Explicit)
+## Rust is Explicit about Intentions
 
 [Back to Table of Contents](#table-of-contents)
 
@@ -6,7 +6,7 @@ In Rust, variables are immutable by default, and mutability must be explicitly d
 This contrasts with C, where mutability is implicit, and `const` must be used to enforce
 immutability.
 
-### Example
+### Example: Mutability is Explicit
 
 ```rust
 let mut x = 42; // Explicitly mutable
@@ -17,7 +17,7 @@ let y = 42; // Immutable by default
 // y += 1; // Compile-time error
 ```
 
-### C Equivalent
+#### C Equivalent
 
 ```c
 int x = 42;
@@ -27,15 +27,14 @@ const int y = 42;
 // y += 1; // Compile-time error in C
 ```
 
-Rust�s design ensures that less safe operations require explicit syntax, aligning with
+Rust design ensures that less safe operations require explicit syntax, aligning with
 its philosophy of safety by design.
 
-## Explicit References When Passing Data (even between scopes let alone functions)
+### Explicit References When Passing Data (even between scopes let alone functions)
 
 In Rust, transferring data between scopes often requires explicit references. Unlike C or C++, Rust has strict ownership rules that prevent data from being "stolen" (move semantics) by inner scopes or inadvertently modified.
 
-### Example
-
+#### Example
 ```rust
 fn main() {
     let mut v = vec![1, 2, 3];

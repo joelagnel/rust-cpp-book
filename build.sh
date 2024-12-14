@@ -16,7 +16,10 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Common pandoc options
-common_opts="--from markdown+smart --toc --number-sections"
+common_opts="--from markdown+smart --toc --toc-depth=1 \
+    --number-sections \
+    --top-level-division=chapter \
+    --shift-heading-level-by=-1"
 
 if [ "$format" = "html" ]; then
     echo "Generating HTML..."

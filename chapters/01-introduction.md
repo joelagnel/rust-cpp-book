@@ -1,4 +1,4 @@
-# Rust for C and C++ programmers
+## Introduction
 
 If you are a C or C++ programmer looking to explore Rust, you might find some of its
 concepts both familiar and distinctively novel. Rust emphasizes safety,
