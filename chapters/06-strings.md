@@ -1,8 +1,6 @@
 ## Strings
 
 ### Strings and the Copy Trait
-[Back to Table of Contents](#table-of-contents)
-
 In Rust, a `String` does not implement the `Copy` trait because it is a heap-allocated type requiring custom logic for duplication. The `Copy` trait is reserved for simple, fixed-size types that can be duplicated with a bitwise memory copy, such as integers (`i32`, `u64`), floats (`f32`, `f64`), and `bool`.
 
 ### Ownership and Passing Strings

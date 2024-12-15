@@ -1,7 +1,5 @@
 ## Traits in Rust vs. Interfaces in C++
 
-[Back to Table of Contents](#table-of-contents)
-
 Rust traits and C++ interfaces (often implemented via pure virtual classes) serve a similar purpose: enabling polymorphism and defining shared behavior. However, the implementation and usage of these concepts differ significantly.
 
 ### Rust Traits Example

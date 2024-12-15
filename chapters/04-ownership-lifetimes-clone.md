@@ -1,6 +1,4 @@
 ## Ownership, Lifetimes and Cloning
-[Back to Table of Contents](#table-of-contents)
-
 When passing objects to functions, Rust�s ownership model ensures that ownership must be explicitly managed. For types that **do not** implement the `Copy` trait, you need to either pass a reference or explicitly clone the object.
 
 ### Example:  Passing Vectors implies move semantic as Vector doesn't have Copy trait
@@ -78,8 +76,6 @@ fn main() {
 - Use `Clone` for heap-allocated or resource-heavy types when deep copies are needed.
 
 ### Lifetime annotations with a practical example
-
-[Back to Table of Contents](#table-of-contents)
 
 Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access.
 

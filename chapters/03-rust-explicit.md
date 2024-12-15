@@ -1,7 +1,5 @@
 ## Rust is Explicit about Intentions
 
-[Back to Table of Contents](#table-of-contents)
-
 In Rust, variables are immutable by default, and mutability must be explicitly declared.
 This contrasts with C, where mutability is implicit, and `const` must be used to enforce
 immutability.
