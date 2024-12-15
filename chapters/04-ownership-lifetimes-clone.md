@@ -37,6 +37,34 @@ modifyList(list);
 
 Note that an array in Rust (as opposed to a Vector) does result in an implicit Copy, much like C++, when passing arrays to functions. This is because elements in an Array are typically allocated in the stack and arrays are fixed size whose size is available at compile time. The compiler then decides to do a full copy when copying these. This happens only if the array's elements have a type with the `Copy` trait, such as `i32`. It is possible to avoid this by passing references to the array if a copy is not desired.
 
+### Another example: references also don't have Copy trait
+
+For example, the following code will not compile due to the same reason as above.
+
+```rust
+fn main() {
+    let mut x = 42;
+    let ptr2 = &mut x;  // create mutable ref
+    let y = ptr2;       // mutable ref moved
+
+    println!("{} {}", y, ptr2);
+}
+```
+
+Results in the following error:
+```rust
+error[E0382]: borrow of moved value: `ptr2`
+ --> src/main.rs:4:26
+  |
+2 |     let mut x = 42; let ptr2 = &mut x; let y = ptr2;
+  |                         ----                   ---- value moved here
+  |                         |
+  |                         move occurs because `ptr2` has type `&mut i32`, which does not implement the `Copy` trait
+3 |
+4 |     println!("{} {}", y, ptr2);
+  |                          ^^^^ value borrowed here after move
+```
+
 ### Cloning vs Copying
 
 In Rust, `clone` and `copy` are distinct mechanisms for duplicating values:

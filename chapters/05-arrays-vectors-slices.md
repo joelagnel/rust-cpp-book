@@ -41,7 +41,7 @@ While Rust does allow for unchecked access using unsafe blocks, these are explic
 
 ### Slices as Fat Pointers
 
-Rust�s slices provide a lightweight way to reference a subset of an array or vector. Slices are fat pointers, storing metadata alongside the pointer to the underlying array's memory, in the space allocated for the slice.
+Rust's slices provide a lightweight way to reference a subset of an array or vector. Slices are fat pointers, storing metadata alongside the pointer to the underlying array's memory, in the space allocated for the slice.
 
 #### Example
 
@@ -55,7 +55,7 @@ Slices ensure that the original array remains unchanged while providing a safe, 
 
 ### Why Explicit References when creating a slice?
 
-The explicit `&` ensures that the array isn�t modified, avoiding potential data races or unexpected behavior while the slice variable is alive. Further, the slice is a reference to the array or a part of it.
+The explicit `&` ensures that the array isn't modified, avoiding potential data races or unexpected behavior while the slice variable is alive. Further, the slice is a reference to the array or a part of it.
 
 ---
 
