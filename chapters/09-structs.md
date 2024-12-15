@@ -84,3 +84,33 @@ fn main() {
     c1.draw();
 }
 ```
+
+### Adding mutability to the struct
+
+As with all things in rust, mutability has to be explictly declared.
+For instance, what if we want `draw()` to be able to modify the struct?
+
+The `mut` keyword has to be added in 2 places as follows to make this work:
+
+```rust
+#[derive(Clone)]
+struct Circle {
+    radius: i32
+}
+
+impl Circle {
+    fn draw(&mut self) { // 1. reference to self must be mutable
+        self.radius += 1;
+        println!("Circle drawing {}", self.radius);
+    }
+}
+
+fn main() {
+    let mut c: Circle = Circle { radius: 5 }; // 2. struct must be mutable
+    let mut c1 = c.clone();
+    c.draw();
+    c1.draw();
+}
+```
+
+Feel free to play around with this example in the rust playground.
