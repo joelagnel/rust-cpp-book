@@ -107,7 +107,7 @@ fn main() {
 
 ### Lifetime annotations with a practical example
 
-Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access. This avoids dangling references and memory leaks.
+Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access. This avoids dangling references.
 
 Consider the following practical example:
 
