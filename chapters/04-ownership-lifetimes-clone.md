@@ -99,6 +99,17 @@ error[E0503]: cannot use `x` because it was mutably borrowed
 
 If ptr2 is not a mutable reference, then the code would compile fine.
 
+Note that this only applies to references, a mutable variable on its own
+can be copied while it is still in scope.
+
+For example, the following code compiles fine:
+```rust
+fn main() {
+    let mut x = 42;
+    let y = x;
+    println!("{} {}", x, y);
+}
+```
 ### Cloning vs Copying
 
 In Rust, `clone` and `copy` are distinct mechanisms for duplicating values:
@@ -177,5 +188,18 @@ fn main() {
 ```
 
 This adjustment ensures that the `account` outlives the `order`, adhering to Rust's strict ownership and borrowing rules.
+
+
+To summarize, the following table shows which types have the `Copy` trait:
+
+| Type       | Copy Trait | Comment |
+| ---------- | ---------- | ------- |
+| `i32`      | Yes        |         |
+| `mut i32`  | Yes        |         |
+| `&i32`     | Yes        |         |
+| `&mut i32` | No         | Also locks out access to original variable |
+| `[i32; 3]` | Yes        | Array has trait of type of its elements |
+| `Vec<i32>` | No         | Because its heap allocated and not fixed size |
+| `String`   | No         | Because its heap allocated and not fixed size |
 
 \pagebreak
