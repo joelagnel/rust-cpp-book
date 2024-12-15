@@ -45,7 +45,6 @@ fn main() {
 Results in the following error:
 
 ```rust
-Compiling playground v0.0.1 (/playground)
 error[E0382]: borrow of moved value: `c`
   --> src/main.rs:16:5
    |
@@ -106,7 +105,8 @@ impl Circle {
 }
 
 fn main() {
-    let mut c: Circle = Circle { radius: 5 }; // 2. struct must be mutable
+    // 2. struct instance must be mutable
+    let mut c: Circle = Circle { radius: 5 };
     let mut c1 = c.clone();
     c.draw();
     c1.draw();
