@@ -35,7 +35,6 @@ if [ "$format" = "html" ]; then
         --template=templates/html.template \
         --css=styles/book.css \
         --mathjax \
-        --toc-depth=2 \
         --section-divs \
         --file-scope \
         --split-level=2 \

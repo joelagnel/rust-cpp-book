@@ -148,6 +148,18 @@ fn main() {
 - Use `Copy` for small, fixed-size types like numbers.
 - Use `Clone` for heap-allocated or resource-heavy types when deep copies are needed.
 
+To summarize, the following table shows which types have the `Copy` trait:
+
+| Type       | Copy Trait | Comment |
+| ---------- | ---------- | ------- |
+| `i32`      | Yes        |         |
+| `mut i32`  | Yes        |         |
+| `&i32`     | Yes        |         |
+| `&mut i32` | No         | Also locks out access to original variable |
+| `[i32; 3]` | Yes        | Array has trait of type of its elements |
+| `Vec<i32>` | No         | Because its heap allocated and not fixed size |
+| `String`   | No         | Because its heap allocated and not fixed size |
+
 ### Lifetime annotations with a practical example
 
 Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access. This avoids dangling references.
@@ -188,18 +200,5 @@ fn main() {
 ```
 
 This adjustment ensures that the `account` outlives the `order`, adhering to Rust's strict ownership and borrowing rules.
-
-
-To summarize, the following table shows which types have the `Copy` trait:
-
-| Type       | Copy Trait | Comment |
-| ---------- | ---------- | ------- |
-| `i32`      | Yes        |         |
-| `mut i32`  | Yes        |         |
-| `&i32`     | Yes        |         |
-| `&mut i32` | No         | Also locks out access to original variable |
-| `[i32; 3]` | Yes        | Array has trait of type of its elements |
-| `Vec<i32>` | No         | Because its heap allocated and not fixed size |
-| `String`   | No         | Because its heap allocated and not fixed size |
 
 \pagebreak
