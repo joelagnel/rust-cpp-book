@@ -67,6 +67,38 @@ error[E0382]: borrow of moved value: `ptr2`
 
 On the other hand, immutable references do have the `Copy` trait! This is because it is safe to have multiple immutable references to the same data.
 
+### Mutable borrows lock out copying
+
+In rust, mutable borrows lock out copying. This is because mutable borrows are exclusive, meaning that once a mutable reference is created, the original value cannot be accessed or copied until the mutable reference goes out of scope. This ensures that the mutable reference is the only way to access the value, preventing data races and ensuring memory safety.
+
+Consider the following example:
+```rust
+fn main() {
+    let mut x = 42;     // x is an i32 which has Copy trait
+    x += 1;
+    let ptr2 = &mut x;  // mutable borrow means..
+    let y = x;          // ..x is inaccessible event for copying
+
+    println!("{} {} {}", x, y, ptr2);
+}
+```
+
+This results in the following error:
+```rust
+error[E0503]: cannot use `x` because it was mutably borrowed
+ --> src/main.rs:5:13
+  |
+4 |     let ptr2 = &mut x;  // create mutable ref
+  |                ------ `x` is borrowed here
+5 |     let y = x;       // mutable ref moved
+  |             ^ use of borrowed `x`
+6 |
+7 |     println!("{} {} {}", x, y, ptr2);
+  |                                ---- borrow later used here
+```
+
+If ptr2 is not a mutable reference, then the code would compile fine.
+
 ### Cloning vs Copying
 
 In Rust, `clone` and `copy` are distinct mechanisms for duplicating values:
