@@ -53,9 +53,7 @@ println!("Value: {}", *x); // 42
 Much like smart pointers in C++, memory allocated on the heap is automatically deallocated when the `Box` goes out of scope.
 
 The `Box` type is actually equivalent to a unique pointer in C++.
-At any given time, there can only be one unique owner of a `Box`.
-Therefore, when you assign a `Box` to another variable, the original `Box`
-is moved to the new variable.
+
 
 ```rust
 // In C++ this would be:
@@ -68,3 +66,24 @@ let y = x; // x is moved to y, x is now invalid
 
 println!("Value: {}", x); // error: borrow of moved value: x
 ```
+At any given time, there can only be one unique owner of the data
+represented by a `Box`.
+When you assign a `Box` to another variable, the original `Box`
+is moved to the new variable.
+
+When you create a copy of the `Box`, the location of the data
+is also duplicated essentially creating two unique owners of
+different data.
+
+Example, the following example illustrates this:
+```rust
+let mut x = Box::new(42);
+let mut y = x.clone();
+
+*y += 1;
+println!("Value: {}", *y); // 43
+println!("Value: {}", *x); // 42
+```
+We will see later that when cloning Rust's equivalent of C++'s
+shared pointers, however, the data is not duplicated but a new
+reference to the same data is created.
