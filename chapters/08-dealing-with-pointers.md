@@ -75,7 +75,7 @@ When you create a copy of the `Box`, the location of the data
 is also duplicated essentially creating two unique owners of
 different data.
 
-Example, the following example illustrates this:
+The following example illustrates this:
 ```rust
 let mut x = Box::new(42);
 let mut y = x.clone();
@@ -87,3 +87,15 @@ println!("Value: {}", *x); // 42
 We will see later that when cloning Rust's equivalent of C++'s
 shared pointers, however, the data is not duplicated but a new
 reference to the same data is created.
+
+### Sharted pointers in Rust
+TBD
+
+### How to allocate arbitrary sized memory on the heap
+TBD
+
+### Raw pointers
+TBD
+
+### Pointer casting
+TBD
