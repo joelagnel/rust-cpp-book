@@ -180,15 +180,6 @@ match Person::new(25) {
 
 ## **Interesting Facts About Rust's OOP Model**
 - Rust’s **traits** combine the best aspects of interfaces and abstract classes, enabling clean polymorphism.
-- By avoiding inheritance, Rust sidesteps problems like the **diamond problem**.
-- Rust’s approach is inspired by functional programming, emphasizing immutability and explicit control.
+- By avoiding inheritance, Rust sidesteps problems related to inheritance, like the **diamond problem**.
 
----
-
-## **Follow-Up Menu**
-Here are paths to dive deeper:
-**A. Traits in Rust:** Explore Rust's trait system for polymorphism and shared behavior.  
-**B. Error Handling:** Learn how Rust’s `Result` type makes error handling safer.  
-**C. Composition Over Inheritance:** Understand why Rust avoids traditional OOP inheritance.  
-
-Choose your next step! 😊
+TODO: Insert the traits versus interfaces chapter here, and delete it.
