@@ -30,8 +30,6 @@ In C++, constructors handle object initialization. While convenient, they introd
      };
      Person p(25); // `age` contains garbage.
      ```
-3. **Error Handling Nightmare**:
-   - Constructors can't return results, forcing error-prone patterns like exceptions.
 
 ### **Rust's Solution**
 Rust avoids constructors entirely and uses **explicit initialization** with safety guarantees.
