@@ -66,7 +66,9 @@ Rust avoids constructors entirely and uses **explicit initialization** with safe
            }
        }
        ```
-
+       Note that returning an error from a C++ constructor is impossible. Constructors don't
+       have a return type. The only way is to throw an exception but that adds complexity and
+       requires exception handling.
 ---
 
 ## **2. Inheritance vs Composition**
