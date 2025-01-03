@@ -162,6 +162,12 @@ To summarize, the following table shows which types have the `Copy` trait:
 | `Vec<i32>` | No         | Because its heap allocated and not fixed size |
 | `String`   | No         | Because its heap allocated and not fixed size |
 
+### Mutable ref while alive prevents creation of immutable refs
+
+This is kind of obvious as a mutable ref prevents any access to the underlying data other than when going through the mutable ref. That includes creation of additional refs (even immutable ones).
+
+Immutable refs on the other hand, have no problem being copied into new immutable refs (The immutable ref type itself implements the copy trait allowing its pointer to be copied). However, new mutable refs cannot be created until all immutable refs go out of scope.
+
 ### Lifetime annotations with a practical example
 
 Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access. This avoids dangling references.
