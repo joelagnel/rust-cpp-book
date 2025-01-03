@@ -1,5 +1,5 @@
 ## Ownership, Lifetimes and Cloning
-When passing objects to functions, Rust�s ownership model ensures that ownership must be explicitly managed. For types that **do not** implement the `Copy` trait, you need to either pass a reference or explicitly clone the object.
+When passing objects to functions, Rust's ownership model ensures that ownership must be explicitly managed. For types that **do not** implement the `Copy` trait, you need to either pass a reference or explicitly clone the object.
 
 ### Example:  Passing Vectors implies move semantic as Vector doesn't have Copy trait
 
