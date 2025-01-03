@@ -39,6 +39,8 @@ Note that an array in Rust (as opposed to a Vector) does result in an implicit C
 
 ### Another example: Mutable references also don't have Copy trait
 
+There can only be one mutable reference (AKA mutable borrow) on an object at a time. So naturally, assigning one mutable reference to another should invalidate the first one. This is exactly why a mutable reference does not have the `Copy` trait and implies move semantics, I believe this only moves the "pointer" to a new "pointer". The data being moved in this case is the pointer.
+
 For example, the following code will not compile due to the same reason as above.
 
 ```rust
