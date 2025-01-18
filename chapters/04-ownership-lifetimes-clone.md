@@ -1,5 +1,5 @@
 ## Ownership, Lifetimes and Cloning
-When passing objects to functions, Rust�s ownership model ensures that ownership must be explicitly managed. For types that **do not** implement the `Copy` trait, you need to either pass a reference or explicitly clone the object.
+When passing objects to functions, Rust's ownership model ensures that ownership must be explicitly managed. For types that **do not** implement the `Copy` trait, you need to either pass a reference or explicitly clone the object.
 
 ### Example:  Passing Vectors implies move semantic as Vector doesn't have Copy trait
 
@@ -38,6 +38,8 @@ modifyList(list);
 Note that an array in Rust (as opposed to a Vector) does result in an implicit Copy, much like C++, when passing arrays to functions. This is because elements in an Array are typically allocated in the stack and arrays are fixed size whose size is available at compile time. The compiler then decides to do a full copy when copying these. This happens only if the array's elements have a type with the `Copy` trait, such as `i32`. It is possible to avoid this by passing references to the array if a copy is not desired.
 
 ### Another example: Mutable references also don't have Copy trait
+
+There can only be one mutable reference (AKA mutable borrow) on an object at a time. So naturally, assigning one mutable reference to another should invalidate the first one. This is exactly why a mutable reference does not have the `Copy` trait and implies move semantics, I believe this only moves the "pointer" to a new "pointer". The data being moved in this case is the pointer.
 
 For example, the following code will not compile due to the same reason as above.
 
@@ -158,6 +160,140 @@ To summarize, the following table shows which types have the `Copy` trait:
 | `[i32; 3]` | Yes        | Array has trait of type of its elements |
 | `Vec<i32>` | No         | Because its heap allocated and not fixed size |
 | `String`   | No         | Because its heap allocated and not fixed size |
+
+### Mutable ref while alive prevents creation of immutable refs
+
+This is kind of obvious as a mutable ref prevents any access to the underlying data other than when going through the mutable ref. That includes creation of additional refs (even immutable ones).
+
+Immutable refs on the other hand, have no problem being copied into new immutable refs (The immutable ref type itself implements the copy trait allowing its pointer to be copied). However, new mutable refs cannot be created until all immutable refs go out of scope.
+
+#### Mutable Aliasing: C++ vs. Rust (with Assembly Code)
+
+Mutable aliasing is a concept where multiple references to the same mutable object can lead to unpredictable results. Rust's **borrow checker** prevents aliasing at compile time, enabling aggressive optimizations. This article compares how C++ and Rust handle mutable aliasing in two scenarios: a general memory aliasing example and a specific case involving vector mutations.
+
+---
+#### Scenario 1: General Mutable Aliasing
+
+##### C++ Code
+
+```cpp
+void store(const int& source, int& dest) {
+    dest = 42;  // Overwrite first
+    dest = source;  // Assign source to dest
+}
+```
+
+In C++, the `store` function allows aliasing, meaning `source` and `dest` could refer to the same memory location. Due to this, the compiler cannot optimize out redundant operations because it cannot guarantee the absence of aliasing.
+
+##### Rust Code
+
+```rust
+pub fn store(source: &i32, dest: &mut i32) {
+    *dest = 42;  // Overwrite first
+    *dest = *source;  // Assign source to dest
+}
+```
+
+In Rust, the **borrow checker** ensures `source` and `dest` cannot alias. This allows the compiler to optimize out redundant operations, leaving only the necessary instructions.
+
+#### Assembly Outputs: General Mutable Aliasing
+
+##### C++ Assembly Output (Clang, `-O3`)
+
+```asm
+store(int const&, int&):
+    mov dword ptr [rsi], 42  ; Store 42 into dest
+    mov eax, dword ptr [rdi] ; Load value from source
+    mov dword ptr [rsi], eax ; Store source into dest
+    ret                      ; Return
+```
+
+Here, the redundant store (`dest = 42`) cannot be optimized out because `source` and `dest` may alias.
+
+##### Rust Assembly Output (`rustc`, `-C opt-level=3`)
+
+```asm
+example::store:
+    mov eax, dword ptr [rdi] ; Load value from source
+    mov dword ptr [rsi], eax ; Store source into dest
+    ret                      ; Return
+```
+
+In Rust, the first store (`dest = 42`) is **optimized out** because the compiler knows `source` and `dest` cannot alias.
+
+---
+
+#### Scenario 2: Aliasing in Vector Mutations
+
+##### C++ Code: Mutable Aliasing Allowed
+
+```cpp
+#include <vector>
+
+void push_int_twice(std::vector<int>& v, const int& n) {
+    v.push_back(n);
+    v.push_back(n);
+}
+
+int main() {
+    std::vector<int> my_vector = {0};
+    const int& my_int_reference = my_vector[0];
+    push_int_twice(my_vector, my_int_reference);
+    return 0;
+}
+```
+
+In C++, this code compiles and runs but risks **undefined behavior**. When `v.push_back(n)` is called, the vector may reallocate its storage, invalidating the reference `my_int_reference`.
+
+##### Rust Code: Borrow Checker Prevents Aliasing
+
+```rust
+fn push_int_twice(v: &mut Vec<i32>, n: &i32) {
+    v.push(*n);
+    v.push(*n);
+}
+
+fn main() {
+    let mut my_vector = vec![0];
+    let my_int_reference = &my_vector[0];
+    push_int_twice(&mut my_vector, my_int_reference); // Error!
+}
+```
+
+In Rust, this code **does not compile**. Rust's **borrow checker** ensures safety by preventing simultaneous mutable and immutable borrows of `my_vector`.
+
+---
+
+##### Rust Compiler Error
+
+```plaintext
+error[E0502]: cannot borrow `my_vector` as mutable because it is also borrowed as immutable
+  --> src/main.rs:12:20
+   |
+11 |     let my_int_reference = &my_vector[0];
+   |                            ----------------- immutable borrow occurs here
+12 |     push_int_twice(&mut my_vector, my_int_reference);
+   |                    ^^^^^^^^^^^^^^ mutable borrow occurs here
+13 | }
+   | - immutable borrow later used here
+```
+
+The compiler detects that `my_vector` is immutably borrowed by `my_int_reference` and refuses to allow a mutable borrow (`&mut my_vector`) in `push_int_twice`.
+
+##### Why This Matters: Undefined Behavior in C++
+
+In C++, the same code runs without errors but introduces subtle bugs:
+1. The call to `v.push_back(n)` may reallocate the vector's storage.
+2. Reallocation invalidates all existing references, including `my_int_reference`.
+3. Subsequent usage of `my_int_reference` results in **undefined behavior**.
+
+Rust eliminates this class of bugs at compile time by ensuring:
+- Mutable and immutable borrows cannot coexist.
+- References to elements in a vector remain valid during mutation.
+
+
+This comparison highlights how Rust's **borrow checker** eliminates aliasing issues at compile time, guaranteeing both safety and performance. In contrast, C++ allows mutable aliasing but requires developers to manually ensure references remain valid. Rust's approach prevents subtle, hard-to-debug runtime errors while enabling aggressive optimizations for safe, predictable code.
+
 
 ### Mutable Aliasing in Parallel Loops
 
