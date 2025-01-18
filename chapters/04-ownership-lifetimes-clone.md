@@ -295,7 +295,7 @@ Rust eliminates this class of bugs at compile time by ensuring:
 This comparison highlights how Rust's **borrow checker** eliminates aliasing issues at compile time, guaranteeing both safety and performance. In contrast, C++ allows mutable aliasing but requires developers to manually ensure references remain valid. Rust's approach prevents subtle, hard-to-debug runtime errors while enabling aggressive optimizations for safe, predictable code.
 
 
-### Mutable Aliasing in Parallel Loops
+### Scenario 3: Mutable Aliasing in Parallel Loops
 
 #### C++ Code: Mutable Aliasing in `std::for_each`
 
