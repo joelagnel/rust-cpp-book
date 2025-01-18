@@ -99,8 +99,7 @@ error[E0503]: cannot use `x` because it was mutably borrowed
 
 If ptr2 is not a mutable reference, then the code would compile fine.
 
-Note that this only applies to references, a mutable variable on its own
-can be copied while it is still in scope.
+Note that this only applies to references, a mutable variable on its own can be copied while it is still in scope.
 
 For example, the following code compiles fine:
 ```rust
@@ -159,6 +158,83 @@ To summarize, the following table shows which types have the `Copy` trait:
 | `[i32; 3]` | Yes        | Array has trait of type of its elements |
 | `Vec<i32>` | No         | Because its heap allocated and not fixed size |
 | `String`   | No         | Because its heap allocated and not fixed size |
+
+### Mutable Aliasing in Parallel Loops
+
+#### C++ Code: Mutable Aliasing in `std::for_each`
+
+```cpp
+#include <vector>
+#include <algorithm>
+
+int main() {
+    std::vector<int> my_vector = {1, 2, 3, 4};
+    int sum = 0;
+
+    std::for_each(my_vector.begin(), my_vector.end(), [&sum](int& x) {
+        sum += x;  // Mutable aliasing of `sum`
+        x *= 2;    // Simultaneously mutates `x`
+    });
+
+    return sum;  // Undefined behavior may occur in parallel execution
+}
+```
+
+In C++:
+- The lambda function passed to `std::for_each` creates a mutable alias to `sum`.
+- Simultaneously, it mutates the elements of the vector (`x`).
+- This behavior works fine in sequential execution but leads to **race conditions** or undefined behavior in **parallel execution** contexts, such as `std::for_each(std::execution::par)`.
+
+---
+
+#### Rust Code: Borrow Checker Prevents Unsafe Aliasing
+
+```rust
+use rayon::prelude::*;
+
+fn main() {
+    let mut my_vector = vec![1, 2, 3, 4];
+    let mut sum = 0;
+
+    my_vector
+        .par_iter_mut()
+        .for_each(|x| {
+            sum += *x; // Compiler error: Cannot mutably borrow `sum` and `my_vector` simultaneously
+            *x *= 2;   // Mutates the vector
+        });
+
+    println!("Sum: {}", sum);
+}
+```
+
+**Rust Compiler Error:**
+```plaintext
+error[E0503]: cannot use `sum` because it was mutably borrowed
+ --> src/main.rs:9:13
+  |
+8 |     my_vector
+  |     --------- mutable borrow occurs here
+9 |             sum += *x; // Compiler prevents aliasing
+  |             ^^^^^^^^^ use of `sum` after mutable borrow
+10 |             *x *= 2;
+  |             -------- mutable borrow later used here
+```
+
+In Rust:
+- The **borrow checker** prevents simultaneous mutable aliasing of `sum` and the elements of `my_vector`.
+- The compiler enforces thread safety by disallowing operations that could lead to race conditions or undefined behavior.
+
+---
+
+#### Why Rust Avoids Aliasing in Parallel Loops
+
+C++ allows mutable aliasing, meaning `sum` and `x` can be aliased and mutated simultaneously. If the loop is parallelized using `std::for_each(std::execution::par)`, this results in **race conditions** and undefined behavior.
+
+Rust's approach ensures:
+1. **No data races**: The borrow checker prevents mutable aliasing between `sum` and `my_vector`. It also prevents multiple threads mutating sum at the same time which could cause the "lost update" problem.
+2. **Thread safety**: Parallel iterators (`par_iter_mut`) enforce safe, isolated access to vector elements.
+
+Rust's borrow checker ensures that code is **safe and race-free** in parallel contexts. By disallowing mutable aliasing, Rust prevents subtle, hard-to-debug bugs that might appear in parallelized C++ code. This guarantees that parallel loops in Rust are both safe and efficient.
 
 ### Lifetime annotations with a practical example
 
