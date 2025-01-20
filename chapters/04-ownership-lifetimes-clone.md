@@ -167,7 +167,7 @@ This is kind of obvious as a mutable ref prevents any access to the underlying d
 
 Immutable refs on the other hand, have no problem being copied into new immutable refs (The immutable ref type itself implements the copy trait allowing its pointer to be copied). However, new mutable refs cannot be created until all immutable refs go out of scope.
 
-#### Mutable Aliasing: C++ vs. Rust (with Assembly Code)
+### Mutable Aliasing: C++ vs. Rust (with Assembly Code)
 
 Mutable aliasing is a concept where multiple references to the same mutable object can lead to unpredictable results. Rust's **borrow checker** prevents aliasing at compile time, enabling aggressive optimizations. This article compares how C++ and Rust handle mutable aliasing in two scenarios: a general memory aliasing example and a specific case involving vector mutations.
 
@@ -196,9 +196,9 @@ pub fn store(source: &i32, dest: &mut i32) {
 
 In Rust, the **borrow checker** ensures `source` and `dest` cannot alias. This allows the compiler to optimize out redundant operations, leaving only the necessary instructions.
 
-#### Assembly Outputs: General Mutable Aliasing
+##### Assembly Outputs: General Mutable Aliasing
 
-##### C++ Assembly Output (Clang, `-O3`)
+###### C++ Assembly Output (Clang, `-O3`)
 
 ```asm
 store(int const&, int&):
@@ -210,7 +210,7 @@ store(int const&, int&):
 
 Here, the redundant store (`dest = 42`) cannot be optimized out because `source` and `dest` may alias.
 
-##### Rust Assembly Output (`rustc`, `-C opt-level=3`)
+###### Rust Assembly Output (`rustc`, `-C opt-level=3`)
 
 ```asm
 example::store:
@@ -295,9 +295,9 @@ Rust eliminates this class of bugs at compile time by ensuring:
 This comparison highlights how Rust's **borrow checker** eliminates aliasing issues at compile time, guaranteeing both safety and performance. In contrast, C++ allows mutable aliasing but requires developers to manually ensure references remain valid. Rust's approach prevents subtle, hard-to-debug runtime errors while enabling aggressive optimizations for safe, predictable code.
 
 
-### Scenario 3: Mutable Aliasing in Parallel Loops
+#### Scenario 3: Mutable Aliasing in Parallel Loops
 
-#### C++ Code: Mutable Aliasing in `std::for_each`
+##### C++ Code: Mutable Aliasing in `std::for_each`
 
 ```cpp
 #include <vector>
@@ -323,7 +323,7 @@ In C++:
 
 ---
 
-#### Rust Code: Borrow Checker Prevents Unsafe Aliasing
+##### Rust Code: Borrow Checker Prevents Unsafe Aliasing
 
 ```rust
 use rayon::prelude::*;
@@ -362,7 +362,7 @@ In Rust:
 
 ---
 
-#### Why Rust Avoids Aliasing in Parallel Loops
+##### Why Rust Avoids Aliasing in Parallel Loops
 
 C++ allows mutable aliasing, meaning `sum` and `x` can be aliased and mutated simultaneously. If the loop is parallelized using `std::for_each(std::execution::par)`, this results in **race conditions** and undefined behavior.
 
