@@ -372,6 +372,127 @@ Rust's approach ensures:
 
 Rust's borrow checker ensures that code is **safe and race-free** in parallel contexts. By disallowing mutable aliasing, Rust prevents subtle, hard-to-debug bugs that might appear in parallelized C++ code. This guarantees that parallel loops in Rust are both safe and efficient.
 
+### References Prevent Moving
+
+Rust has strict rules about references to ensure memory safety, particularly when dealing with borrowing and moving objects. This section contrasts **C++** and **Rust** with two examples to demonstrate how Rust's rules prevent invalid memory access.
+
+---
+
+#### 1. Borrowing Prevents Moving (String View Example)
+
+**C++ Example:**
+
+```cpp
+#include <string>
+#include <string_view>
+#include <iostream>
+
+int main() {
+    std::string s1 = "abcde";
+    std::string_view my_view = s1; // Borrow the string as a view
+    std::string s2 = std::move(s1); // Move `s1` to `s2`
+    std::cout << my_view << std::endl; // Access my_view
+}
+```
+
+In C++:
+- After moving `s1` to `s2`, the `std::string_view my_view` becomes invalid because it points to the memory of `s1`, which is now in an undefined state.
+- This causes **undefined behavior** when `my_view` is accessed, even though the code does compile!
+
+---
+
+**Rust Example:**
+
+```rust
+fn main() {
+    let s1 = "abcde".to_string();
+    let my_view = s1.as_str(); // Borrow the string
+    let s2 = s1;               // Move `s1` to `s2`
+    dbg!(my_view);             // Attempt to access `my_view`
+}
+```
+
+**Compiler Error:**
+```plaintext
+error[E0505]: cannot move out of `s1` because it is borrowed
+ --> src/main.rs:5:14
+  |
+4 |     let my_view = s1.as_str(); // Borrow of `s1` occurs here
+  |                    ---------- borrow of `s1` occurs here
+5 |     let s2 = s1;              // Move out of `s1` occurs here
+  |              ^^ move out of `s1` occurs here
+6 |     dbg!(my_view);            // Borrow later used here
+  |          ------- borrow later used here
+```
+
+In Rust:
+- The borrow checker ensures `s1` cannot be moved while it is still borrowed by `my_view`.
+- This prevents accessing invalid memory and guarantees safety.
+
+---
+
+#### 2. Moving Behind a Mutable Reference Is Not Allowed
+
+**C++ Example:**
+
+```cpp
+#include <string>
+#include <iostream>
+
+void f(std::string& s1) {
+    std::string s2 = std::move(s1); // Move `s1` to `s2`
+    std::cout << s2 << std::endl;   // Use `s2`
+}
+
+int main() {
+    std::string s1 = "foo";
+    f(s1);                          // Pass `s1` by reference
+    std::cout << s1 << std::endl;   // Use `s1` after it has been moved
+}
+```
+
+In C++:
+- `std::move(s1)` moves the contents of `s1` to `s2`. After this, `s1` is in an undefined state, but the program still attempts to use it.
+- This can lead to undefined behavior.
+
+---
+
+**Rust Example:**
+
+```rust
+fn f(s1: &mut String) {
+    let s2 = *s1;         // Attempt to move `s1` through a mutable reference
+    dbg!(s2);
+}
+
+fn main() {
+    let mut s1 = "foo".to_string();
+    f(&mut s1);          // Pass `s1` as a mutable reference
+    dbg!(s1);
+}
+```
+
+**Compiler Error:**
+```plaintext
+error[E0507]: cannot move out of `*s1` which is behind a mutable reference
+ --> src/main.rs:2:14
+  |
+2 |     let s2 = *s1;         // Attempt to move `s1` through a mutable reference
+  |              ^^^ move occurs because `*s1` has type `String`, which does not implement the `Copy` trait
+```
+
+In Rust:
+- The compiler prevents moving `s1` through a mutable reference, as it would leave the referenced value in an undefined state.
+- This ensures `s1` remains valid for further use after the function call.
+
+---
+
+#### Key Takeaways
+
+- **C++**: Allows unsafe operations like moving an object that is still borrowed, leading to undefined behavior.
+- **Rust**: Enforces strict rules with its borrow checker, ensuring references remain valid and preventing accidental moves behind references.
+- Rust's approach guarantees memory safety and prevents hard-to-debug runtime errors.
+
 ### Lifetime annotations with a practical example
 
 Rust's lifetime annotations provide a way to explicitly indicate how references relate to each other in terms of their lifetimes, ensuring safe memory access. This avoids dangling references.
