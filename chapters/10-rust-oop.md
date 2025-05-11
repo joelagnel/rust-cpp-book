@@ -183,3 +183,110 @@ match Person::new(25) {
 - By avoiding inheritance, Rust sidesteps problems related to inheritance, like the **diamond problem**.
 
 TODO: Insert the traits versus interfaces chapter here, and delete it.
+
+## Understanding `&self`, `Self`, and References in Rust
+
+This is a beginner-friendly section to help you remember how `&self`, `Self`, and references work in Rust. If you've just started exploring traits and methods, this should serve as a handy refresher.
+
+---
+
+## What is `&self`?
+
+In Rust, `&self` is shorthand for `self: &Self`. It's used in method definitions to indicate that the function is a method that takes an **immutable reference** to the instance it's called on.
+
+### Example:
+
+```rust
+struct MyType {
+    value: i32,
+}
+
+impl MyType {
+    fn show(&self) {
+        println!("Value: {}", self.value);
+    }
+}
+```
+
+Here, `show` takes `&self`, which means it only *reads* from the instance and doesn’t modify it.
+
+---
+
+## What is `Self` (with capital S)?
+
+`Self` refers to the **implementing type** in an `impl` block or a trait.
+
+### Example in an `impl` block:
+
+```rust
+struct MyType;
+
+impl MyType {
+    fn new() -> Self {
+        MyType
+    }
+}
+```
+
+Here, `Self` is `MyType`.
+
+### Example in a trait:
+
+```rust
+trait Greeter {
+    fn greet(&self);
+}
+```
+
+When implemented for a type like `String`, `Self` becomes `String`.
+
+```rust
+impl Greeter for String {
+    fn greet(&self) {
+        println!("Hello from '{}'", self);
+    }
+}
+```
+
+---
+
+## How Can You Have References in Function *Definitions*?
+
+Rust lets you **declare** that a function takes a reference, but it doesn’t create the reference at definition time. The **caller** is responsible for passing the reference.
+
+### Example:
+
+```rust
+fn print_num(n: &i32) {
+    println!("{}", n);
+}
+
+fn main() {
+    let x = 42;
+    print_num(&x); // Caller creates the reference
+}
+```
+
+The borrow checker ensures that:
+- The reference points to valid data.
+- It doesn't outlive the original data.
+- It respects aliasing and mutability rules.
+
+---
+
+## Summary Table
+
+| Syntax       | Meaning                                                  |
+|--------------|----------------------------------------------------------|
+| `&self`      | Borrowed immutable reference to the instance             |
+| `&mut self`  | Borrowed mutable reference to the instance               |
+| `Self`       | Refers to the implementing type (`MyType`, `X<T>`, etc.) |
+| `&T`         | Reference to a value of type `T`, passed by the caller   |
+
+---
+
+## Final Tip
+
+Remember: `self` is the instance, `Self` is the type, and `&` means you're borrowing, not owning.
+
+
