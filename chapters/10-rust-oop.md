@@ -250,7 +250,7 @@ impl Greeter for String {
 
 ---
 
-## How Can You Have References in Function *Definitions*?
+## How Can You Have References like &self in Function *Prototypes*? aren't paranetets supposed to be names and types (name: T).
 
 Rust lets you **declare** that a function takes a reference, but it doesn’t create the reference at definition time. The **caller** is responsible for passing the reference.
 
